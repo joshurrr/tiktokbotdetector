@@ -3,291 +3,211 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TikTok Bot/Fake Detector (Demo)</title>
+  <title>TikTok Bot / Fake Detector</title>
+
   <style>
-    :root { --bg:#0b0f14; --card:#111826; --muted:#8aa0b8; --text:#e8f0ff; --accent:#4cc9f0; --warn:#ffd166; --bad:#ff5c7a; --good:#57e389; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: radial-gradient(1200px 600px at 20% 0%, #132238 0%, var(--bg) 55%); color:var(--text); }
-    .wrap { max-width: 920px; margin: 0 auto; padding: 28px 16px 60px; }
-    h1 { font-size: 28px; margin: 8px 0 10px; letter-spacing: .2px; }
-    p { color: var(--muted); line-height: 1.5; }
-    .card { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .grid { display:grid; gap:14px; grid-template-columns: 1fr; }
-    @media (min-width: 860px){ .grid { grid-template-columns: 1.2fr .8fr; } }
-    label { display:block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-    input[type="text"]{
-      width:100%; box-sizing:border-box; padding: 12px 12px;
-      border-radius: 12px; border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25); color: var(--text);
-      outline: none;
+    :root {
+      --bg:#0b0f14;
+      --card:#111826;
+      --muted:#8aa0b8;
+      --text:#e8f0ff;
+      --accent:#4cc9f0;
+      --warn:#ffd166;
+      --bad:#ff5c7a;
+      --good:#57e389;
     }
-    input[type="text"]:focus{ border-color: rgba(76,201,240,.6); box-shadow: 0 0 0 3px rgba(76,201,240,.15); }
-    .row { display:flex; gap:10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    body {
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 600px at 20% 0%, #132238 0%, var(--bg) 55%);
+      color:var(--text);
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+    h1 {
+      font-size: 28px;
+      margin: 8px 0 10px;
+      letter-spacing: .2px;
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .grid {
+      display:grid;
+      gap:14px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 860px){
+      .grid { grid-template-columns: 1.2fr .8fr; }
+    }
+    label {
+      display:block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    input[type="text"]{
+      width:100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+    }
     button{
-      border:0; border-radius: 12px; padding: 11px 14px; cursor:pointer;
+      border:0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor:pointer;
       background: linear-gradient(180deg, rgba(76,201,240,.95), rgba(76,201,240,.75));
-      color:#041018; font-weight: 700;
+      color:#041018;
+      font-weight: 700;
     }
     button.secondary{
-      background: rgba(255,255,255,.06); color: var(--text);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
       border: 1px solid rgba(255,255,255,.12);
-      font-weight: 600;
     }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
-    .pill { display:inline-flex; gap:8px; align-items:center; padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: var(--muted); font-size: 12px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .meter { height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow:hidden; border:1px solid rgba(255,255,255,.10); }
-    .meter > div { height:100%; width:0%; background: var(--accent); transition: width .5s ease; }
-    .score { font-size: 42px; font-weight: 900; margin: 10px 0 0; }
-    .hint { font-size: 12px; color: var(--muted); margin-top: 10px; }
-    .list { margin: 12px 0 0; padding: 0; list-style: none; }
-    .list li { margin: 8px 0; padding: 10px 10px; border-radius: 12px; background: rgba(0,0,0,.22); border: 1px solid rgba(255,255,255,.08); }
-    .tag { display:inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; margin-left: 8px; }
-    .tag.good { background: rgba(87,227,137,.12); border: 1px solid rgba(87,227,137,.35); color: var(--good); }
-    .tag.warn { background: rgba(255,209,102,.12); border: 1px solid rgba(255,209,102,.35); color: var(--warn); }
-    .tag.bad { background: rgba(255,92,122,.12); border: 1px solid rgba(255,92,122,.35); color: var(--bad); }
-    .small { font-size: 12px; color: var(--muted); }
-    .footer { margin-top: 16px; }
-    .hr { height:1px; background: rgba(255,255,255,.08); margin: 14px 0; }
-    .toast { margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.28); color: var(--muted); display:none; }
-    .toast.show { display:block; }
-    .codebox { padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.30); overflow:auto; }
+    .row {
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      align-items:center;
+    }
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .score {
+      font-size: 42px;
+      font-weight: 900;
+      margin-top: 10px;
+    }
+    .meter {
+      height: 10px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .meter > div {
+      height:100%;
+      width:0%;
+      background: var(--accent);
+      transition: width .5s ease;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+    }
+    ul li {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .hr {
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin: 14px 0;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>TikTok Bot / Fake Detector <span class="pill">Front-end demo</span></h1>
+      <h1>TikTok Bot / Fake Detector</h1>
+
       <p>
-        Paste a TikTok profile URL or <span class="mono">@handle</span>. This page runs a <b>local demo</b> score.
-        To truly scan engagement (followers/commenters/likers), you’ll need a backend using TikTok-approved access or exported data.
+        Paste a TikTok profile URL or <span class="mono">@handle</span>. This tool estimates how likely an account is to be
+        fake or bot-driven.
+        <b>Free access can be granted to followers who pass the test.</b>
+        <br><br>
+        This page currently runs a <b>local demo</b> score. Full scanning of engagement (followers, commenters, likers)
+        requires additional data access or exports.
       </p>
+
       <div class="hr"></div>
 
       <div class="grid">
         <div class="card">
-          <label for="tiktok">TikTok profile URL or @handle</label>
-          <input id="tiktok" type="text" placeholder="e.g. https://www.tiktok.com/@yourhandle  or  @yourhandle" />
+          <label for="handle">TikTok profile</label>
+          <input id="handle" type="text" placeholder="@username or https://www.tiktok.com/@username" />
 
           <div class="row">
-            <button id="scanBtn">Scan</button>
-            <button id="demoWaveBtn" class="secondary" title="Simulate suspicious bot-wave engagement">Simulate bot wave</button>
-            <button id="resetBtn" class="secondary">Reset</button>
-            <span class="pill">Mode: <span id="modeLabel" class="mono">DEMO</span></span>
-          </div>
-
-          <div id="toast" class="toast"></div>
-
-          <div class="footer small">
-            <div><b>Reality check:</b> Browser JS can’t pull TikTok data directly because of CORS + auth + platform protections.</div>
-            <div>When you’re ready, point this UI at your backend: <span class="mono">POST /api/scan</span>.</div>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="small">Backend hook (optional)</div>
-          <div class="codebox small mono">
-            <div>// Set API_ENDPOINT below to your server, e.g. https://yourdomain.com/api/scan</div>
-            <div>// Response shape expected:</div>
-            <div>{
-  "handle": "yourhandle",
-  "riskScore": 0-100,
-  "verdict": "Low | Medium | High",
-  "reasons": ["..."],
-  "stats": { "commentsAnalyzed": 0, "accountsFlagged": 0 }
-}</div>
+            <button onclick="scan(false)">Scan</button>
+            <button class="secondary" onclick="scan(true)">Simulate bot wave</button>
+            <span class="pill">Mode: DEMO</span>
           </div>
         </div>
 
         <div class="card">
-          <div class="pill">Risk score (0 = fine, 100 = super sketchy)</div>
+          <div class="pill">Risk score</div>
           <div class="score" id="score">—</div>
-          <div class="meter" aria-label="risk meter"><div id="bar"></div></div>
-          <div id="verdict" class="pill" style="margin-top:12px;">Verdict: <span class="mono">—</span></div>
-
-          <div class="hr"></div>
-
-          <div class="pill">Why it scored that way</div>
-          <ul class="list" id="reasons"></ul>
-
-          <div class="hr"></div>
-
-          <div class="pill">Notes</div>
-          <div class="small" id="notes">
-            This demo only checks the handle string + simulated activity patterns. Real detection needs real signals (account age, post history, comment bursts, repeated text, clusters, etc.).
-          </div>
+          <div class="meter"><div id="bar"></div></div>
+          <ul id="reasons"></ul>
         </div>
       </div>
     </div>
   </div>
 
 <script>
-  // ===============================
-  // CONFIG
-  // ===============================
-  const API_ENDPOINT = ""; // e.g. "https://yourdomain.com/api/scan" (leave blank for DEMO)
-
-  // ===============================
-  // Helpers
-  // ===============================
-  function showToast(msg) {
-    const t = document.getElementById("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 3200);
+  function normalize(input){
+    if(!input) return null;
+    const m = input.match(/@([A-Za-z0-9._]+)/);
+    if(m) return m[1];
+    return input.replace(/https?:\/\/(www\.)?tiktok\.com\//,'').replace('@','').trim();
   }
 
-  function normalizeHandle(input) {
-    const s = (input || "").trim();
-    if (!s) return null;
+  function scan(sim){
+    const h = normalize(document.getElementById("handle").value);
+    if(!h) return alert("Invalid handle");
 
-    // Accept:
-    // - @handle
-    // - handle
-    // - https://www.tiktok.com/@handle
-    // - https://tiktok.com/@handle
-    // - tiktok.com/@handle?...
-    const m = s.match(/@([A-Za-z0-9._]+)/);
-    if (m && m[1]) return m[1];
-
-    // maybe user typed plain handle
-    const plain = s.replace(/^https?:\/\//, "").replace(/^www\./, "");
-    if (/^[A-Za-z0-9._]{2,24}$/.test(plain)) return plain;
-
-    return null;
-  }
-
-  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-  function riskColor(score){
-    if (score >= 75) return "bad";
-    if (score >= 40) return "warn";
-    return "good";
-  }
-
-  function verdict(score){
-    if (score >= 75) return "High";
-    if (score >= 40) return "Medium";
-    return "Low";
-  }
-
-  // ===============================
-  // DEMO Scoring (fake data)
-  // ===============================
-  function scoreHandleOnly(handle, simulateWave=false) {
-    // This is intentionally basic. Real scoring uses real observed behavior + account stats.
     let score = 10;
     const reasons = [];
 
-    // suspicious patterns
-    if (/\d{4,}$/.test(handle)) { score += 18; reasons.push("Handle ends with lots of digits (common in bulk-created accounts)."); }
-    if (/(free|promo|airdrop|crypto|giveaway|cash|adult|sex|dmme|whatsapp|telegram)/i.test(handle)) {
-      score += 25; reasons.push("Handle contains spammy keywords."); 
-    }
-    if (handle.length < 4) { score += 12; reasons.push("Very short handle (often squatted or throwaway)."); }
-    if ((handle.match(/[._]/g) || []).length >= 3) { score += 10; reasons.push("Lots of separators (._) sometimes seen in generated handles."); }
-
-    // simulate engagement wave heuristics (for demo only)
-    if (simulateWave) {
-      score += 45;
-      reasons.push("Simulated: engagement arrived in tight bursts (bot-wave pattern).");
-      reasons.push("Simulated: repeated comment templates detected.");
-      reasons.push("Simulated: same cluster of accounts hits multiple posts quickly.");
-    } else {
-      reasons.push("This is a demo score based only on the handle text (not real TikTok data).");
+    if(/\d{4,}$/.test(h)){ score+=20; reasons.push("Handle ends in many digits."); }
+    if(h.length < 4){ score+=15; reasons.push("Very short handle."); }
+    if(sim){
+      score+=45;
+      reasons.push("Simulated burst engagement.");
+      reasons.push("Repeated comment patterns.");
     }
 
-    score = clamp(score, 0, 100);
-
-    // add a positive reason if low
-    if (score < 40) reasons.unshift("No obvious red flags from the handle string alone.");
-
-    return { riskScore: score, reasons };
-  }
-
-  // ===============================
-  // UI
-  // ===============================
-  function renderResult(handle, riskScore, reasonsArr) {
-    document.getElementById("score").textContent = String(riskScore);
-    document.getElementById("bar").style.width = riskScore + "%";
-
-    const v = verdict(riskScore);
-    const tag = riskColor(riskScore);
-    const verdictEl = document.getElementById("verdict");
-    verdictEl.innerHTML = `Verdict: <span class="mono">${v}</span> <span class="tag ${tag}">${tag.toUpperCase()}</span>`;
+    score = Math.min(score,100);
+    document.getElementById("score").textContent = score;
+    document.getElementById("bar").style.width = score + "%";
 
     const ul = document.getElementById("reasons");
     ul.innerHTML = "";
-    (reasonsArr || []).slice(0, 8).forEach(r => {
+    reasons.forEach(r=>{
       const li = document.createElement("li");
       li.textContent = r;
       ul.appendChild(li);
     });
-
-    document.getElementById("notes").textContent =
-      `Scanned input: @${handle}. Score is a heuristic. “High” ≠ proven bot — it means “looks sketchy.”`;
   }
-
-  async function runScan(simulateWave=false) {
-    const input = document.getElementById("tiktok").value;
-    const handle = normalizeHandle(input);
-
-    if (!handle) {
-      showToast("Couldn’t parse that. Paste a TikTok URL like https://www.tiktok.com/@name or just @name.");
-      return;
-    }
-
-    const scanBtn = document.getElementById("scanBtn");
-    scanBtn.disabled = true;
-
-    const mode = API_ENDPOINT ? "LIVE (backend)" : "DEMO";
-    document.getElementById("modeLabel").textContent = mode;
-
-    try {
-      if (!API_ENDPOINT) {
-        // Local demo scoring
-        const r = scoreHandleOnly(handle, simulateWave);
-        renderResult(handle, r.riskScore, r.reasons);
-        showToast("Demo scan complete (no TikTok data pulled).");
-      } else {
-        // Real scan via your backend
-        const resp = await fetch(API_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ handle })
-        });
-        if (!resp.ok) throw new Error(`Backend error: ${resp.status}`);
-        const data = await resp.json();
-
-        renderResult(
-          data.handle || handle,
-          clamp(Number(data.riskScore ?? 0), 0, 100),
-          Array.isArray(data.reasons) ? data.reasons : ["No reasons returned."]
-        );
-        showToast("Live scan complete (via backend).");
-      }
-    } catch (e) {
-      console.error(e);
-      showToast("Scan failed. If using a backend, check API_ENDPOINT + server logs.");
-    } finally {
-      scanBtn.disabled = false;
-    }
-  }
-
-  function resetUI(){
-    document.getElementById("score").textContent = "—";
-    document.getElementById("bar").style.width = "0%";
-    document.getElementById("verdict").innerHTML = `Verdict: <span class="mono">—</span>`;
-    document.getElementById("reasons").innerHTML = "";
-    document.getElementById("notes").textContent =
-      "This demo only checks the handle string + simulated activity patterns. Real detection needs real signals.";
-    showToast("Reset.");
-  }
-
-  document.getElementById("scanBtn").addEventListener("click", () => runScan(false));
-  document.getElementById("demoWaveBtn").addEventListener("click", () => runScan(true));
-  document.getElementById("resetBtn").addEventListener("click", resetUI);
 </script>
 </body>
 </html>
