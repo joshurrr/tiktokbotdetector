@@ -8,13 +8,15 @@
   <style>
     :root {
       --bg:#0b0f14;
-      --card:#111826;
       --muted:#8aa0b8;
       --text:#e8f0ff;
       --accent:#4cc9f0;
       --warn:#ffd166;
       --bad:#ff5c7a;
       --good:#57e389;
+      --card: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.10);
+      --panel: rgba(0,0,0,.22);
     }
     body {
       margin:0;
@@ -22,20 +24,10 @@
       background: radial-gradient(1200px 600px at 20% 0%, #132238 0%, var(--bg) 55%);
       color:var(--text);
     }
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 28px 16px 60px;
-    }
-    h1 {
-      font-size: 28px;
-      margin: 8px 0 10px;
-      letter-spacing: .2px;
-    }
-    p {
-      color: var(--muted);
-      line-height: 1.5;
-    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 60px; }
+    h1 { font-size: 28px; margin: 8px 0 10px; letter-spacing: .2px; }
+    p { color: var(--muted); line-height: 1.5; }
+
     .card {
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border: 1px solid rgba(255,255,255,.08);
@@ -43,95 +35,72 @@
       padding: 18px;
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    .grid {
-      display:grid;
-      gap:14px;
-      grid-template-columns: 1fr;
+    .grid { display:grid; gap:14px; grid-template-columns: 1fr; }
+    @media (min-width: 900px){ .grid { grid-template-columns: 1.25fr .75fr; } }
+
+    label { display:block; font-size: 13px; color: var(--muted); margin: 10px 0 8px; }
+    input[type="text"], textarea {
+      width:100%; box-sizing:border-box; padding: 12px;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25); color: var(--text);
+      outline: none;
     }
-    @media (min-width: 860px){
-      .grid { grid-template-columns: 1.2fr .8fr; }
+    textarea { min-height: 86px; resize: vertical; }
+
+    input:focus, textarea:focus {
+      border-color: rgba(76,201,240,.6);
+      box-shadow: 0 0 0 3px rgba(76,201,240,.15);
     }
-    label {
-      display:block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    input[type="text"]{
-      width:100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-    }
+
+    .row { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; align-items:center; }
+
     button{
-      border:0;
-      border-radius: 12px;
-      padding: 11px 14px;
-      cursor:pointer;
+      border:0; border-radius: 12px; padding: 11px 14px; cursor:pointer;
       background: linear-gradient(180deg, rgba(76,201,240,.95), rgba(76,201,240,.75));
-      color:#041018;
-      font-weight: 700;
+      color:#041018; font-weight: 800;
     }
     button.secondary{
-      background: rgba(255,255,255,.06);
-      color: var(--text);
+      background: rgba(255,255,255,.06); color: var(--text);
       border: 1px solid rgba(255,255,255,.12);
+      font-weight: 650;
     }
-    .row {
-      display:flex;
-      gap:10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-      align-items:center;
-    }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+
     .pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
+      display:inline-flex; gap:8px; align-items:center;
+      padding: 6px 10px; border-radius: 999px;
+      font-size: 12px; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
       color: var(--muted);
     }
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    .hr { height:1px; background: rgba(255,255,255,.08); margin: 14px 0; }
+
+    .score { font-size: 44px; font-weight: 950; margin: 10px 0 0; }
+    .meter { height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow:hidden; border:1px solid rgba(255,255,255,.10); }
+    .meter > div { height:100%; width:0%; background: var(--accent); transition: width .5s ease; }
+
+    .tag { display:inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; margin-left: 8px; }
+    .tag.good { background: rgba(87,227,137,.12); border: 1px solid rgba(87,227,137,.35); color: var(--good); }
+    .tag.warn { background: rgba(255,209,102,.12); border: 1px solid rgba(255,209,102,.35); color: var(--warn); }
+    .tag.bad  { background: rgba(255,92,122,.12); border: 1px solid rgba(255,92,122,.35); color: var(--bad); }
+
+    ul { list-style:none; padding:0; margin: 12px 0 0; }
+    ul li { margin: 8px 0; padding: 10px; border-radius: 12px; background: rgba(0,0,0,.22); border: 1px solid rgba(255,255,255,.08); }
+
+    .small { font-size: 12px; color: var(--muted); }
+    .two { display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+    .three { display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 640px){ .two, .three { grid-template-columns: 1fr; } }
+
+    .toast {
+      margin-top: 12px; padding: 10px 12px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.28); color: var(--muted);
+      display:none;
     }
-    .score {
-      font-size: 42px;
-      font-weight: 900;
-      margin-top: 10px;
-    }
-    .meter {
-      height: 10px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .meter > div {
-      height:100%;
-      width:0%;
-      background: var(--accent);
-      transition: width .5s ease;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 12px 0 0;
-    }
-    ul li {
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .hr {
-      height:1px;
-      background: rgba(255,255,255,.08);
-      margin: 14px 0;
-    }
+    .toast.show { display:block; }
   </style>
 </head>
 
@@ -139,75 +108,362 @@
   <div class="wrap">
     <div class="card">
       <h1>TikTok Bot / Fake Detector</h1>
-
       <p>
-        Paste a TikTok profile URL or <span class="mono">@handle</span>. This tool estimates how likely an account is to be
-        fake or bot-driven.
+        Paste a TikTok <b>profile URL</b> or <span class="mono">@handle</span>. This page will check what it can from public signals.
         <b>Free access can be granted to followers who pass the test.</b>
         <br><br>
-        This page currently runs a <b>local demo</b> score. Full scanning of engagement (followers, commenters, likers)
-        requires additional data access or exports.
+        Heads up: TikTok often blocks websites from reading profile data directly. If that happens, use the
+        “Open profile” button and copy the public stats into the quick fields — still fast, still public.
       </p>
 
       <div class="hr"></div>
 
       <div class="grid">
+        <!-- LEFT -->
         <div class="card">
-          <label for="handle">TikTok profile</label>
-          <input id="handle" type="text" placeholder="@username or https://www.tiktok.com/@username" />
+          <label for="tiktok">TikTok profile URL or @handle</label>
+          <input id="tiktok" type="text" placeholder="e.g. https://www.tiktok.com/@username or @username" />
 
           <div class="row">
-            <button onclick="scan(false)">Scan</button>
-            <button class="secondary" onclick="scan(true)">Simulate bot wave</button>
-            <span class="pill">Mode: DEMO</span>
+            <button id="scanBtn">Scan</button>
+            <button id="openBtn" class="secondary" disabled>Open profile</button>
+            <button id="resetBtn" class="secondary">Reset</button>
+            <span class="pill">Mode: <span id="mode" class="mono">PUBLIC + MANUAL FALLBACK</span></span>
+          </div>
+
+          <div id="toast" class="toast"></div>
+
+          <div class="hr"></div>
+
+          <div class="pill">Quick public stats (optional, improves accuracy)</div>
+          <div class="small" style="margin-top:8px;">
+            If the auto-check is blocked, open the profile and paste these from what you can see publicly.
+          </div>
+
+          <div class="three" style="margin-top:10px;">
+            <div>
+              <label for="followers">Followers</label>
+              <input id="followers" type="text" placeholder="e.g. 12.3K" />
+            </div>
+            <div>
+              <label for="following">Following</label>
+              <input id="following" type="text" placeholder="e.g. 7,890" />
+            </div>
+            <div>
+              <label for="likes">Likes</label>
+              <input id="likes" type="text" placeholder="e.g. 532K" />
+            </div>
+          </div>
+
+          <div class="two" style="margin-top:10px;">
+            <div>
+              <label for="videos">Videos</label>
+              <input id="videos" type="text" placeholder="e.g. 0 / 3 / 120" />
+            </div>
+            <div>
+              <label for="hasPic">Has profile pic?</label>
+              <input id="hasPic" type="text" placeholder="yes / no" />
+            </div>
+          </div>
+
+          <label for="bio">Bio text (paste it if visible)</label>
+          <textarea id="bio" placeholder="Paste bio here (optional)"></textarea>
+
+          <div class="small" style="margin-top:10px;">
+            Tip: If you want this to be hands-off later, the next step is a Chrome extension to read the profile page while you’re logged in.
           </div>
         </div>
 
+        <!-- RIGHT -->
         <div class="card">
-          <div class="pill">Risk score</div>
+          <div class="pill">Risk score (0 = fine, 100 = super sketchy)</div>
           <div class="score" id="score">—</div>
           <div class="meter"><div id="bar"></div></div>
+
+          <div id="verdict" class="pill" style="margin-top:12px;">Verdict: <span class="mono">—</span></div>
+
+          <div class="hr"></div>
+
+          <div class="pill">What triggered it</div>
           <ul id="reasons"></ul>
+
+          <div class="hr"></div>
+
+          <div class="pill">Public data found</div>
+          <div class="small" id="found">
+            Nothing fetched yet.
+          </div>
         </div>
       </div>
     </div>
   </div>
 
 <script>
-  function normalize(input){
-    if(!input) return null;
-    const m = input.match(/@([A-Za-z0-9._]+)/);
-    if(m) return m[1];
-    return input.replace(/https?:\/\/(www\.)?tiktok\.com\//,'').replace('@','').trim();
+  function showToast(msg){
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3200);
   }
 
-  function scan(sim){
-    const h = normalize(document.getElementById("handle").value);
-    if(!h) return alert("Invalid handle");
+  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
 
+  function parseHumanNumber(s){
+    if(!s) return null;
+    const raw = String(s).trim().toUpperCase().replace(/,/g,'');
+    if(!raw) return null;
+
+    // Accept: 123, 12.3K, 4.1M, 2B
+    const m = raw.match(/^(\d+(\.\d+)?)([KMB])?$/);
+    if(!m) return null;
+
+    const base = parseFloat(m[1]);
+    const suf = m[3] || "";
+    const mult = suf === "K" ? 1e3 : suf === "M" ? 1e6 : suf === "B" ? 1e9 : 1;
+    return Math.round(base * mult);
+  }
+
+  function normalizeInput(input){
+    const s = (input||"").trim();
+    if(!s) return null;
+
+    // @handle
+    let m = s.match(/@([A-Za-z0-9._]+)/);
+    if(m && m[1]) return { handle: m[1], url: `https://www.tiktok.com/@${m[1]}` };
+
+    // URL
+    if(/^https?:\/\//i.test(s)){
+      // try extract handle
+      m = s.match(/tiktok\.com\/@([A-Za-z0-9._]+)/i);
+      if(m && m[1]) return { handle: m[1], url: `https://www.tiktok.com/@${m[1]}` };
+      // If they pasted a weird TikTok URL, keep it as URL but no handle
+      return { handle: null, url: s };
+    }
+
+    // plain handle
+    if(/^[A-Za-z0-9._]{2,24}$/.test(s)){
+      return { handle: s, url: `https://www.tiktok.com/@${s}` };
+    }
+
+    return null;
+  }
+
+  function riskTag(score){
+    if(score >= 75) return "bad";
+    if(score >= 40) return "warn";
+    return "good";
+  }
+
+  function verdict(score){
+    if(score >= 75) return "High";
+    if(score >= 40) return "Medium";
+    return "Low";
+  }
+
+  function scoreFromSignals({handle, followers, following, likes, videos, bio, hasPic, fetchedAny}){
     let score = 10;
     const reasons = [];
 
-    if(/\d{4,}$/.test(h)){ score+=20; reasons.push("Handle ends in many digits."); }
-    if(h.length < 4){ score+=15; reasons.push("Very short handle."); }
-    if(sim){
-      score+=45;
-      reasons.push("Simulated burst engagement.");
-      reasons.push("Repeated comment patterns.");
+    // Handle patterns
+    if(handle){
+      if(/\d{4,}$/.test(handle)){ score += 18; reasons.push("Handle ends with lots of digits (bulk-created vibe)."); }
+      if((handle.match(/[._]/g)||[]).length >= 3){ score += 10; reasons.push("Handle has lots of separators (._) which can be generated."); }
+      if(handle.length < 4){ score += 12; reasons.push("Very short handle (often throwaway/squatted)."); }
+      if(/(free|promo|airdrop|crypto|giveaway|cash|adult|sex|dm|whatsapp|telegram)/i.test(handle)){
+        score += 25; reasons.push("Handle contains spammy keywords.");
+      }
+    } else {
+      score += 6;
+      reasons.push("No handle extracted from URL (scoring limited).");
     }
 
-    score = Math.min(score,100);
-    document.getElementById("score").textContent = score;
-    document.getElementById("bar").style.width = score + "%";
+    // Bio keywords
+    if(bio){
+      const b = bio.toLowerCase();
+      if(/(whatsapp|telegram|t\.me|signal|snap|onlyfans|adult|18\+|cashapp|airdrop|giveaway|dm me|link in bio)/i.test(bio)){
+        score += 22; reasons.push("Bio contains common scam/spam call-to-action keywords.");
+      }
+      if(/(http|www\.|\.com|\.net|bit\.ly|tinyurl|linktr)/i.test(bio)){
+        score += 10; reasons.push("Bio contains outbound links (not always bad, but a risk signal).");
+      }
+    }
+
+    // Profile pic
+    if(typeof hasPic === "boolean" && hasPic === false){
+      score += 10; reasons.push("No profile picture (common for low-effort fake accounts).");
+    }
+
+    // Public stats heuristics
+    const fwers = followers ?? null;
+    const fwing = following ?? null;
+    const lks = likes ?? null;
+    const vids = videos ?? null;
+
+    if(fwers !== null && fwing !== null){
+      if(fwing >= 2000 && fwers <= 50){
+        score += 25; reasons.push("Following is huge while followers are tiny (classic follow-spam pattern).");
+      } else if(fwing >= 5000 && fwers <= 200){
+        score += 18; reasons.push("Very high following with low followers (sketchy growth pattern).");
+      }
+      if(fwers > 0 && fwing > 0){
+        const ratio = fwers / fwing;
+        if(ratio < 0.02 && fwing > 500){
+          score += 12; reasons.push("Follower/following ratio is extremely low.");
+        }
+      }
+    }
+
+    if(vids !== null){
+      if(vids === 0){
+        score += 16; reasons.push("Zero videos (not proof, but common for bot/spam accounts).");
+      } else if(vids <= 2){
+        score += 8; reasons.push("Very few videos (thin footprint).");
+      }
+    }
+
+    if(lks !== null && fwers !== null){
+      if(fwers >= 1000 && lks <= 50){
+        score += 10; reasons.push("Followers high but total likes very low (inconsistent footprint).");
+      }
+      if(fwers <= 20 && lks >= 5000){
+        score += 8; reasons.push("Likes high but followers tiny (could be odd, could be repost/like-farm).");
+      }
+    }
+
+    // If we fetched nothing, be honest and nudge
+    if(!fetchedAny && !bio && fwers === null && fwing === null && lks === null && vids === null){
+      score += 10;
+      reasons.push("Couldn’t pull public profile data automatically (TikTok blocks most websites). Use manual stats for better accuracy.");
+    }
+
+    score = clamp(score, 0, 100);
+
+    if(reasons.length === 0){
+      reasons.push("No obvious red flags from the limited signals available.");
+    }
+
+    return { score, reasons };
+  }
+
+  async function tryFetchOEmbed(url){
+    // TikTok has an oEmbed endpoint for TikTok URLs.
+    // BUT: CORS may block this from a static site. If it fails, we fallback.
+    const endpoint = `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`;
+    const res = await fetch(endpoint, { method: "GET" }); // likely CORS-blocked in many cases
+    if(!res.ok) throw new Error("oEmbed HTTP " + res.status);
+    return await res.json();
+  }
+
+  function renderResult(handle, url, riskScore, reasons, foundText){
+    document.getElementById("score").textContent = String(riskScore);
+    document.getElementById("bar").style.width = riskScore + "%";
+
+    const v = verdict(riskScore);
+    const tag = riskTag(riskScore);
+    document.getElementById("verdict").innerHTML =
+      `Verdict: <span class="mono">${v}</span> <span class="tag ${tag}">${tag.toUpperCase()}</span>`;
 
     const ul = document.getElementById("reasons");
     ul.innerHTML = "";
-    reasons.forEach(r=>{
+    reasons.slice(0,10).forEach(r => {
       const li = document.createElement("li");
       li.textContent = r;
       ul.appendChild(li);
     });
+
+    document.getElementById("found").textContent = foundText || "No public data fetched; used manual inputs only.";
+
+    // enable open button
+    const openBtn = document.getElementById("openBtn");
+    openBtn.disabled = !url;
+    openBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
   }
+
+  function resetUI(){
+    document.getElementById("score").textContent = "—";
+    document.getElementById("bar").style.width = "0%";
+    document.getElementById("verdict").innerHTML = `Verdict: <span class="mono">—</span>`;
+    document.getElementById("reasons").innerHTML = "";
+    document.getElementById("found").textContent = "Nothing fetched yet.";
+    document.getElementById("openBtn").disabled = true;
+
+    ["followers","following","likes","videos","hasPic","bio","tiktok"].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = "";
+    });
+
+    showToast("Reset.");
+  }
+
+  async function scan(){
+    const scanBtn = document.getElementById("scanBtn");
+    scanBtn.disabled = true;
+
+    try {
+      const parsed = normalizeInput(document.getElementById("tiktok").value);
+      if(!parsed){
+        showToast("Couldn’t parse that. Paste a TikTok profile URL or @handle.");
+        return;
+      }
+
+      const handle = parsed.handle;
+      const url = parsed.url;
+
+      // Read manual fields (optional)
+      const followers = parseHumanNumber(document.getElementById("followers").value);
+      const following = parseHumanNumber(document.getElementById("following").value);
+      const likes = parseHumanNumber(document.getElementById("likes").value);
+      const videos = parseHumanNumber(document.getElementById("videos").value);
+      const bio = (document.getElementById("bio").value || "").trim();
+      const hasPicRaw = (document.getElementById("hasPic").value || "").trim().toLowerCase();
+      const hasPic = hasPicRaw ? (hasPicRaw.startsWith("y") ? true : hasPicRaw.startsWith("n") ? false : undefined) : undefined;
+
+      // Try to fetch *something* public automatically (best-effort)
+      let fetchedAny = false;
+      let foundText = "";
+      let fetchedBio = null;
+
+      try {
+        // NOTE: This often fails due to CORS. If it works, awesome.
+        const o = await tryFetchOEmbed(url);
+        fetchedAny = true;
+
+        // oEmbed gives: author_name, author_url, title (sometimes), thumbnail_url, etc.
+        foundText = `Fetched via public oEmbed: author=${o.author_name || "?"} title=${o.title ? "yes" : "no"} thumbnail=${o.thumbnail_url ? "yes" : "no"}`;
+        // Sometimes oEmbed includes "title" which can have bio-ish text, but it’s not reliable.
+        fetchedBio = (o.title || "").trim() || null;
+      } catch (e) {
+        // swallow and fallback
+        foundText = "Auto-fetch blocked (common). Used manual inputs only.";
+      }
+
+      const combinedBio = bio || fetchedBio || "";
+      const result = scoreFromSignals({
+        handle,
+        followers,
+        following,
+        likes,
+        videos,
+        bio: combinedBio,
+        hasPic: (typeof hasPic === "boolean") ? hasPic : undefined,
+        fetchedAny
+      });
+
+      renderResult(handle || "(unknown)", url, result.score, result.reasons, foundText);
+
+      if(fetchedAny){
+        showToast("Scan complete (some public metadata fetched).");
+      } else {
+        showToast("Scan complete. For better accuracy, paste the public stats from the profile.");
+      }
+
+    } finally {
+      scanBtn.disabled = false;
+    }
+  }
+
+  document.getElementById("scanBtn").addEventListener("click", scan);
+  document.getElementById("resetBtn").addEventListener("click", resetUI);
 </script>
 </body>
 </html>
